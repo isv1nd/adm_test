@@ -1,30 +1,37 @@
-class HTML2PDFBaseConversionException(Exception):
+from pdf_service.base import exceptions
+
+
+class BaseCentralException(exceptions.ServiceBaseException):
+    pass
+
+
+class HTML2PDFBaseConversionException(BaseCentralException):
     pass
 
 
 class HTML2PDFInvalidConversionException(HTML2PDFBaseConversionException):
-    pass
+    message = "Conversion was not successful"
 
 
 class HTML2PDFUnexpectedException(HTML2PDFBaseConversionException):
-    pass
+    message = "Unexpected error was occurred during conversion"
 
 
-class BaseGetHTMLByUrlException(Exception):
+class BaseGetHTMLByUrlException(BaseCentralException):
     pass
 
 
 class GetHTMLByUrlTimeoutException(BaseGetHTMLByUrlException):
-    pass
+    message = "Request for html data got too match time"
 
 
 class GetHTMLByUrlInvalidStatusException(BaseGetHTMLByUrlException):
-    pass
+    message = "Invalid request status was returned for GET request for HTML"
 
 
 class GetHTMLByUrlInvalidContentTypeException(BaseGetHTMLByUrlException):
-    pass
+    message = "Invalid Content Type for html resource"
 
 
 class GetHTMLByUrlInvalidHeadStatusException(BaseGetHTMLByUrlException):
-    pass
+    message = "Invalid request status was returned for HEAD request for HTML"
