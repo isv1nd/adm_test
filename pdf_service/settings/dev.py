@@ -118,3 +118,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# APP settings
+
+GET_HTML_BY_URL_TIMEOUT = 6
+ALLOWED_CONTENT_TYPES = ['text/html']

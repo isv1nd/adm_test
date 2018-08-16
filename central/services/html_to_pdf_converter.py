@@ -4,22 +4,11 @@ import logging
 
 from xhtml2pdf import pisa
 
+from central.services import exceptions
 from pdf_service.base import service
 
 
 LOG = logging.getLogger(__name__)
-
-
-class HTML2PDFBaseConversionException(Exception):
-    pass
-
-
-class HTML2PDFInvalidConversionException(HTML2PDFBaseConversionException):
-    pass
-
-
-class HTML2PDFUnexpectedException(HTML2PDFBaseConversionException):
-    pass
 
 
 class AbstractHTML2PDFConverter(service.BaseService, metaclass=abc.ABCMeta):
@@ -38,9 +27,9 @@ class PisaHTML2PDFConverter(AbstractHTML2PDFConverter):
             )
         except Exception as exc:
             LOG.exception(exc)
-            raise HTML2PDFUnexpectedException
+            raise exceptions.HTML2PDFUnexpectedException
 
         if pdf.err:
-            raise HTML2PDFInvalidConversionException
+            raise exceptions.HTML2PDFInvalidConversionException
 
         return result.getvalue()

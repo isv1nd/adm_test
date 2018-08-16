@@ -1,5 +1,6 @@
 from unittest import mock
 
+from central.services import exceptions
 from pdf_service.base import test
 from central.services import html_to_pdf_converter
 
@@ -8,7 +9,7 @@ class BaseHTML2PDFConverterTest(test.BaseTest):
     pass
 
 
-class PisaHTML2PDFConverterTest(test.BaseTest):
+class PisaHTML2PDFConverterTest(BaseHTML2PDFConverterTest):
     def setUp(self):
         super().setUp()
         self.test_html = """
@@ -33,7 +34,7 @@ class PisaHTML2PDFConverterTest(test.BaseTest):
         converter_mock.return_value.err = True
 
         self.assertRaises(
-            html_to_pdf_converter.HTML2PDFInvalidConversionException,
+            exceptions.HTML2PDFInvalidConversionException,
             self.service.convert_html_to_pdf,
             self.test_html
         )
@@ -43,7 +44,7 @@ class PisaHTML2PDFConverterTest(test.BaseTest):
         converter_mock.side_effect = Exception("Unexpectedly failed")
 
         self.assertRaises(
-            html_to_pdf_converter.HTML2PDFUnexpectedException,
+            exceptions.HTML2PDFUnexpectedException,
             self.service.convert_html_to_pdf,
             self.test_html
         )
