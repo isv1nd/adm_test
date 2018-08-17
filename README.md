@@ -16,6 +16,11 @@ pip install -r requirements/service-requirements.txt
 python manage.py migrate
 ```
 
+* Run tests
+```bash
+python manage.py test
+```
+
 * Run development server
 ```bash
 python manage.py runserver 0.0.0.0:8000
