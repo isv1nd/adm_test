@@ -17,13 +17,26 @@ from central.services import exceptions as ctrl_exceptions
 LOG = logging.getLogger(__name__)
 
 
-class ConvertHtmlToPdfUsingLinkView(views.APIView):
+class BaseConvertView(views.APIView):
     permission_classes = (permissions.AllowAny,)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.convert_service = convert_facade.ConvertFacadeService()
 
+    @staticmethod
+    def _generate_file_response(pdf: bytes) -> HttpResponse:
+        response_ = HttpResponse(
+            pdf, content_type='application/pdf',
+            status=status.HTTP_200_OK
+        )
+        response_['Content-Disposition'] = \
+            'attachment; filename="{}"'.format(settings.PDF_FILENAME)
+
+        return response_
+
+
+class ConvertHtmlToPdfUsingLinkView(BaseConvertView):
     def post(self, request: req.Request, *args, **kwargs) -> HttpResponse:
         serializer = html_to_pdf_convert.URLSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -37,31 +50,19 @@ class ConvertHtmlToPdfUsingLinkView(views.APIView):
         except ctrl_exceptions.HTML2PDFBaseConversionException:
             raise exceptions.ValidationError(_("Conversion to PDF was failed."))
 
-        response_ = HttpResponse(
-            pdf, content_type='application/pdf',
-            status=status.HTTP_200_OK
-        )
-        response_['Content-Disposition'] = \
-            'attachment; filename="{}"'.format(settings.PDF_FILENAME)
+        return self._generate_file_response(pdf)
 
-        return response_
 
-    def get(self, request: req.Request, *args, **kwargs) -> HttpResponse:
+class ConvertHtmlToPdfUsingHtmlDataView(BaseConvertView):
+    def post(self, request: req.Request, *args, **kwargs) -> HttpResponse:
+        serializer = html_to_pdf_convert.HtmlSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
         try:
-            pdf = self.convert_service.convert_html_to_pdf_using_link(
-                "https://yandex.by"
+            pdf = self.convert_service.convert_html_to_pdf_using_data(
+                serializer.validated_data["html_data"]
             )
-        except ctrl_exceptions.BaseGetHTMLByUrlException:
-            raise exceptions.ValidationError(_("Invalid HTML resource."))
         except ctrl_exceptions.HTML2PDFBaseConversionException:
             raise exceptions.ValidationError(_("Conversion to PDF was failed."))
 
-        response_ = HttpResponse(
-            pdf, content_type='application/pdf',
-            status=status.HTTP_200_OK
-        )
-        response_['Content-Disposition'] = \
-            'attachment; filename="{}"'.format(settings.PDF_FILENAME)
-
-        return response_
+        return self._generate_file_response(pdf)
