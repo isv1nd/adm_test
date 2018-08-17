@@ -9,7 +9,7 @@ from central.services import get_html_from_remote
 
 @mock.patch.object(requests, 'get')
 @mock.patch.object(requests, 'head')
-class GetHtmlFromRemoteService(test.BaseTest):
+class GetHtmlFromRemoteService(test.BaseSimpleTest):
     def setUp(self):
         super().setUp()
         self.test_url = "https://test.tst/wild.php"

@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'central.apps.CentralConfig',
+    'api.apps.ApiConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -120,9 +123,26 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'api.exceptions.exception_handler',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.OrderingFilter',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 # APP settings
 
 GET_HTML_BY_URL_TIMEOUT = 6
 ALLOWED_CONTENT_TYPES = ['text/html']
-HTML_TO_PDF_CONVERTER_CLASS = "central.services.html_to_pdf_converter.PisaHTML2PDFConverter"
+HTML_TO_PDF_CONVERTER_CLASS = "central.services.html_to_pdf_converter.WeEasyPrintHTML2PDFConverter"
+PDF_FILENAME = "pdf_document"

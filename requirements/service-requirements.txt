@@ -1,5 +1,5 @@
 Django==2.1
 djangorestframework==3.8.2
 requests==2.19.1
-xhtml2pdf==0.2.2
+WeasyPrint==0.42.3
 bleach==2.1.3

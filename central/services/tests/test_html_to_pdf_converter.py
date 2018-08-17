@@ -1,15 +1,17 @@
 from unittest import mock
 
+import weasyprint
+
 from central.services import exceptions
 from pdf_service.base import test
 from central.services import html_to_pdf_converter
 
 
-class BaseHTML2PDFConverterTest(test.BaseTest):
+class BaseHTML2PDFConverterTest(test.BaseSimpleTest):
     pass
 
 
-class PisaHTML2PDFConverterTest(BaseHTML2PDFConverterTest):
+class WeEasyPrintHTML2PDFConverterTest(BaseHTML2PDFConverterTest):
     def setUp(self):
         super().setUp()
         self.test_html = """
@@ -20,7 +22,7 @@ class PisaHTML2PDFConverterTest(BaseHTML2PDFConverterTest):
             </body>
         </html>
         """
-        self.service = html_to_pdf_converter.PisaHTML2PDFConverter()
+        self.service = html_to_pdf_converter.WeEasyPrintHTML2PDFConverter()
 
     def test_html_to_pdf_convert_success(self):
         result = self.service.convert_html_to_pdf(self.test_html)
@@ -29,22 +31,12 @@ class PisaHTML2PDFConverterTest(BaseHTML2PDFConverterTest):
         self.assertIsInstance(result, bytes)
         self.assertEqual(b"%PDF", result[:4])
 
-    @mock.patch("xhtml2pdf.pisa.pisaDocument")
+    @mock.patch.object(weasyprint.HTML, 'write_pdf')
     def test_html_to_pdf_convert_raises_if_error_status_was_returned(self, converter_mock):
-        converter_mock.return_value.err = True
+        converter_mock.side_effect = Exception
 
         self.assertRaises(
             exceptions.HTML2PDFInvalidConversionException,
-            self.service.convert_html_to_pdf,
-            self.test_html
-        )
-
-    @mock.patch("xhtml2pdf.pisa.pisaDocument")
-    def test_html_to_pdf_convert_raises_if_unexpected_error_raises(self, converter_mock):
-        converter_mock.side_effect = Exception("Unexpectedly failed")
-
-        self.assertRaises(
-            exceptions.HTML2PDFUnexpectedException,
             self.service.convert_html_to_pdf,
             self.test_html
         )
