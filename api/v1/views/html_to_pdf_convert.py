@@ -8,6 +8,7 @@ from rest_framework import request as req
 from rest_framework import status
 from rest_framework import exceptions
 from rest_framework import permissions
+from rest_framework import parsers
 
 from api.v1.serializers import html_to_pdf_convert
 from central.services import convert_facade
@@ -54,13 +55,15 @@ class ConvertHtmlToPdfUsingLinkView(BaseConvertView):
 
 
 class ConvertHtmlToPdfUsingHtmlDataView(BaseConvertView):
+    parser_classes = (parsers.MultiPartParser,)
+
     def post(self, request: req.Request, *args, **kwargs) -> HttpResponse:
         serializer = html_to_pdf_convert.HtmlSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         try:
             pdf = self.convert_service.convert_html_to_pdf_using_data(
-                serializer.validated_data["html_data"]
+                serializer.validated_data["html_file"].read().decode()
             )
         except ctrl_exceptions.HTML2PDFBaseConversionException:
             raise exceptions.ValidationError(_("Conversion to PDF was failed."))

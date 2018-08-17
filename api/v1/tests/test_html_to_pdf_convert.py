@@ -1,4 +1,5 @@
 from unittest import mock
+import io
 
 from django.urls import reverse_lazy
 from django.test import utils
@@ -46,11 +47,20 @@ class HTMLToPdfConverterViaHtmlDataV1Test(test.BaseV1TestCase):
         self.test_response = b'%PDF'
         self.test_html = "<html><body>Test</body></html>"
 
+    def _generate_html_file(self, html: str=None, name='test.html') -> io.BytesIO:
+        html = html or self.test_html
+        file = io.BytesIO()
+        file.write(html.encode())
+        file.name = name
+        file.seek(0)
+
+        return file
+
     @mock.patch.object(convert_facade.ConvertFacadeService, 'convert_html_to_pdf_using_data')
     def test_convert_using_html_data(self, service_mock):
         service_mock.return_value = self.test_response
 
-        response = self.client.post(self.URL, {"html_data": self.test_html})
+        response = self.client.post(self.URL, {"html_file": self._generate_html_file()}, format='multipart')
         self.assertEqual(status.HTTP_200_OK, response.status_code)
         self.assertEqual(self.test_response, response.content)
         self.assertTrue(service_mock.called)
@@ -59,7 +69,7 @@ class HTMLToPdfConverterViaHtmlDataV1Test(test.BaseV1TestCase):
     def test_convert_using_link_failed_if_internal_exception_raises(self, service_mock):
         service_mock.side_effect = exceptions.HTML2PDFBaseConversionException
 
-        response = self.client.post(self.URL, {"html_data": self.test_html})
+        response = self.client.post(self.URL, {"html_file": self._generate_html_file()}, format='multipart')
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertTrue(service_mock.called)
 
@@ -67,6 +77,6 @@ class HTMLToPdfConverterViaHtmlDataV1Test(test.BaseV1TestCase):
     def test_convert_using_link_failed_if_invalid_html(self, service_mock):
         service_mock.return_value = self.test_response
 
-        response = self.client.post(self.URL, {"html_data": "invalid"})
+        response = self.client.post(self.URL, {"html_file": self._generate_html_file(name="file.zip")}, format='multipart')
         self.assertEqual(status.HTTP_400_BAD_REQUEST, response.status_code)
         self.assertFalse(service_mock.called)

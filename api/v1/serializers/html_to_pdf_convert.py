@@ -1,9 +1,5 @@
-from django.conf import settings
-from django.utils import module_loading
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
-
-from central.services import exceptions
 
 
 class URLSerializer(serializers.Serializer):
@@ -13,14 +9,12 @@ class URLSerializer(serializers.Serializer):
 
 
 class HtmlSerializer(serializers.Serializer):
-    html_data = serializers.CharField(
-        max_length=100000, required=True, allow_blank=False, allow_null=False
+    html_file = serializers.FileField(
+        required=True, allow_null=False, allow_empty_file=False
     )
 
-    @staticmethod
-    def validate_html_data(value):
-        html_checker = module_loading.import_string(settings.HTML_CHECKER)()
-        try:
-            return html_checker.check_html(value)
-        except exceptions.InvalidHTML:
-            raise serializers.ValidationError(_("Invalid HTML"))
+    def validate_html_file(self, value):
+        if value.name.split(".")[-1] != "html":
+            raise serializers.ValidationError(_("Invalid html file."))
+        return value
+
