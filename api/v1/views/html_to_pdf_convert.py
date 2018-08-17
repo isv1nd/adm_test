@@ -67,5 +67,7 @@ class ConvertHtmlToPdfUsingHtmlDataView(BaseConvertView):
             )
         except ctrl_exceptions.HTML2PDFBaseConversionException:
             raise exceptions.ValidationError(_("Conversion to PDF was failed."))
+        except UnicodeDecodeError:
+            raise exceptions.ValidationError(_("Invalid html file."))
 
         return self._generate_file_response(pdf)
