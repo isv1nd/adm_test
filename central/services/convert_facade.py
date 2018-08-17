@@ -1,6 +1,5 @@
 import logging
 
-import bleach
 import bs4
 from django.conf import settings
 from django.utils import module_loading
@@ -15,10 +14,6 @@ LOG = logging.getLogger(__name__)
 
 class ConvertFacadeService(service.BaseService):
     def __init__(self):
-        self.allowed_tags = getattr(settings, "BLEACH_ALLOWED_TAGS", bleach.ALLOWED_TAGS)
-        self.allowed_attributes = getattr(settings, "BLEACH_ALLOWED_ATTRIBUTES", bleach.ALLOWED_ATTRIBUTES)
-        self.allowed_styles = getattr(settings, "BLEACH_ALLOWED_STYLES", bleach.ALLOWED_ATTRIBUTES)
-
         self.get_html_from_remote_service = get_html_from_remote.GetHtmlFromRemoteService()
         self.html_to_pdf_converter = module_loading.import_string(
             getattr(
