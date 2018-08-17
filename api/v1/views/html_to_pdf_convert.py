@@ -45,7 +45,7 @@ class ConvertHtmlToPdfUsingLinkView(BaseConvertView):
             pdf = self.convert_service.convert_html_to_pdf_using_link(
                 serializer.validated_data["url"]
             )
-        except ctrl_exceptions.BaseGetHTMLByUrlException:
+        except (ctrl_exceptions.BaseGetHTMLByUrlException, ctrl_exceptions.InvalidHTML):
             raise exceptions.ValidationError(_("Invalid HTML resource."))
         except ctrl_exceptions.HTML2PDFBaseConversionException:
             raise exceptions.ValidationError(_("Conversion to PDF was failed."))

@@ -1,5 +1,9 @@
+from django.conf import settings
+from django.utils import module_loading
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
-import bs4
+
+from central.services import exceptions
 
 
 class URLSerializer(serializers.Serializer):
@@ -15,9 +19,8 @@ class HtmlSerializer(serializers.Serializer):
 
     @staticmethod
     def validate_html_data(value):
-        """This validation is just example. Html validation is a
-        little bit more complex process.
-        """
-        if not bs4.BeautifulSoup(value, "html.parser").find("html"):
-            raise serializers.ValidationError("Invalid HTML")
-        return value
+        html_checker = module_loading.import_string(settings.HTML_CHECKER)()
+        try:
+            return html_checker.check_html(value)
+        except exceptions.InvalidHTML:
+            raise serializers.ValidationError(_("Invalid HTML"))

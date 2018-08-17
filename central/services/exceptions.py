@@ -5,6 +5,10 @@ class BaseCentralException(exceptions.ServiceBaseException):
     pass
 
 
+class InvalidHTML(exceptions.ServiceBaseException):
+    message = "Invalid HTML"
+
+
 class HTML2PDFBaseConversionException(BaseCentralException):
     pass
 

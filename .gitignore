@@ -11,6 +11,7 @@ build
 # Test related files
 
 *.log
+*.sqlite3
 .coverage
 .coverage.*
 .testrepository/*
@@ -31,7 +32,6 @@ env
 # Editors
 *~
 .*.swp
-
 
 # PyCharm
 .idea/

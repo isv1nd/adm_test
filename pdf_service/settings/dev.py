@@ -145,4 +145,5 @@ REST_FRAMEWORK = {
 GET_HTML_BY_URL_TIMEOUT = 6
 ALLOWED_CONTENT_TYPES = ['text/html']
 HTML_TO_PDF_CONVERTER_CLASS = "central.services.html_to_pdf_converter.WeEasyPrintHTML2PDFConverter"
+HTML_CHECKER = "central.services.html_check.HTMLChecker"
 PDF_FILENAME = "pdf_document"

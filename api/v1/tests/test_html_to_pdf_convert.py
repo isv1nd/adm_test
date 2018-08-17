@@ -1,6 +1,7 @@
 from unittest import mock
 
 from django.urls import reverse_lazy
+from django.test import utils
 from rest_framework import status
 
 from central.services import convert_facade
@@ -34,6 +35,9 @@ class HTMLToPdfConverterViaLinkV1Test(test.BaseV1TestCase):
         self.assertTrue(service_mock.called)
 
 
+@utils.override_settings(
+    HTML_CHECKER="central.services.html_check.HTMLChecker"
+)
 class HTMLToPdfConverterViaHtmlDataV1Test(test.BaseV1TestCase):
     URL = reverse_lazy("v1_convert_html_to_pdf_data")
 
