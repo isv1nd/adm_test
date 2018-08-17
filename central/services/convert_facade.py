@@ -1,6 +1,7 @@
 import logging
 
 import bleach
+import bs4
 from django.conf import settings
 from django.utils import module_loading
 
@@ -35,10 +36,7 @@ class ConvertFacadeService(service.BaseService):
         return self._convert_html_to_pdf(html_data)
 
     def _convert_html_to_pdf(self, html_data):
-        # html_data = bleach.clean(
-        #     html_data, self.allowed_tags, self.allowed_attributes,
-        #     self.allowed_styles, strip=True
-        # )
+        html_data = str(bs4.BeautifulSoup(html_data, "html.parser"))
 
         pdf = self.html_to_pdf_converter.convert_html_to_pdf(html_data)
         return pdf

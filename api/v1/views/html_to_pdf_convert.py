@@ -45,3 +45,23 @@ class ConvertHtmlToPdfUsingLinkView(views.APIView):
             'attachment; filename="{}"'.format(settings.PDF_FILENAME)
 
         return response_
+
+    def get(self, request: req.Request, *args, **kwargs) -> HttpResponse:
+
+        try:
+            pdf = self.convert_service.convert_html_to_pdf_using_link(
+                "https://yandex.by"
+            )
+        except ctrl_exceptions.BaseGetHTMLByUrlException:
+            raise exceptions.ValidationError(_("Invalid HTML resource."))
+        except ctrl_exceptions.HTML2PDFBaseConversionException:
+            raise exceptions.ValidationError(_("Conversion to PDF was failed."))
+
+        response_ = HttpResponse(
+            pdf, content_type='application/pdf',
+            status=status.HTTP_200_OK
+        )
+        response_['Content-Disposition'] = \
+            'attachment; filename="{}"'.format(settings.PDF_FILENAME)
+
+        return response_
