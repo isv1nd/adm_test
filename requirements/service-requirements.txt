@@ -3,3 +3,4 @@ djangorestframework==3.8.2
 requests==2.19.1
 WeasyPrint==0.42.3
 beautifulsoup4==4.6.3
+psycopg2==2.7.3.1

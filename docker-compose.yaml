@@ -1,0 +1,26 @@
+version: "2"
+services:
+  pdf_service_db:
+    restart: unless-stopped
+    image: postgres:10.4
+    volumes:
+      - postgre_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    env_file: docker/postgres.env
+  pdf_service_api:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    links:
+      - pdf_service_db
+    depends_on:
+      - pdf_service_db
+
+volumes:
+  postgre_data:
